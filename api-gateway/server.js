@@ -4,6 +4,10 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const morgan = require('morgan');
 
 const app = express();
+
+const promBundle = require('express-prom-bundle');
+const metricsMiddleware = promBundle({ includeMethod: true, includePath: true, excludeRoutes: ['/health'] });
+app.use(metricsMiddleware);
 const PORT = process.env.PORT || 8080;
 
 // Logging setup

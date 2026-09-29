@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      enableServiceLinks: false
+      containers:
+      - name: user-service
+        image: user-service:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - configMapRef:
+            name: lab8-config
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: lab8-mongo
+              key: USER_MONGO_URI
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 10

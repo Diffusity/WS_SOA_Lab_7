@@ -1,0 +1,18 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-service, product-service, order-service]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: ./${{ matrix.service }}
+      - name: Run Tests
+        run: npm test
+        working-directory: ./${{ matrix.service }}
+      - name: Build Docker Image
+        run: docker build -t ${{ matrix.service }}:${{ github.sha }} ./${{ matrix.service }}

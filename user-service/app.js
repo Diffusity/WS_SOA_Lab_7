@@ -8,6 +8,13 @@ const usersRouter = require("./routes/users");
 function createApp() {
   const app = express();
 
+  const promBundle = require('express-prom-bundle');
+  const metricsMiddleware = promBundle({ includeMethod: true, includePath: true, excludeRoutes: ['/health'] });
+  app.use(metricsMiddleware);
+
+  app.get('/health', (req, res) => {
+      res.status(200).json({ status: 'UP', message: 'User Service is running' });
+  });
   app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
   app.use(express.json());
 
