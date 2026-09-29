@@ -1,4 +1,4 @@
-# Lab 7: API Gateway, Service Discovery & Cloud Deployment
+# Lab 7 & 8: API Gateway, Kubernetes, CI/CD & Monitoring
 
 ## Architecture Diagram
 
@@ -61,3 +61,79 @@ In contrast, **Dynamic Service Discovery** (e.g., Consul, Eureka, Kubernetes DNS
 
 ## Reflection
 Implementing the API Gateway and deploying to the cloud fundamentally transformed how the system is operated. In Lab 6, clients had to connect to multiple disparate ports, exposing the internal structure, and all services ran locally. Now, the API Gateway acts as a secure, singular facade, handling routing and global error interception, which makes the client's job much easier. Furthermore, deploying to the cloud using configuration-based service discovery (environment variables) allowed us to decouple the code from the infrastructure. The microservices are now internet-accessible, scalable, and the gateway seamlessly routes traffic without any hard-coded dependencies, creating a truly production-ready architecture.
+
+---
+
+# Lab 8: Kubernetes & Monitoring Documentation
+
+## 1. Kubernetes Deployment Instructions
+We have migrated our deployment from Docker Compose / Render to **Kubernetes** to achieve better orchestration, scaling, and self-healing.
+
+### How to Deploy
+1. Ensure you have a local Kubernetes cluster running (e.g., Docker Desktop Kubernetes or Minikube).
+2. Create the `lab8` namespace:
+   ```bash
+   kubectl create namespace lab8
+   ```
+3. Create the MongoDB Secret. Create a file named `k8s/mongo.env` (this is ignored by Git for security) with your MongoDB Atlas connection strings:
+   ```env
+   USER_MONGO_URI=mongodb+srv://<user>:<password>@cluster0...
+   PRODUCT_MONGO_URI=mongodb+srv://<user>:<password>@cluster0...
+   ORDER_MONGO_URI=mongodb+srv://<user>:<password>@cluster0...
+   ```
+4. Apply the secret to the cluster:
+   ```bash
+   kubectl create secret generic lab8-mongo -n lab8 --from-env-file=k8s/mongo.env
+   ```
+5. Apply the Kubernetes manifests (Deployments, Services, ConfigMaps):
+   ```bash
+   kubectl apply -f k8s/ -n lab8
+   ```
+6. Verify all pods are running:
+   ```bash
+   kubectl get pods,svc -n lab8
+   ```
+
+### Accessing the Application
+The `api-gateway` is exposed externally via a `NodePort` on port `30080`.
+You can access the API Gateway locally at: `http://localhost:30080`
+
+## 2. Scaling & Self-Healing
+Kubernetes makes scaling and self-healing trivial:
+* **Scaling**: To scale the user service to 3 replicas, run:
+  ```bash
+  kubectl scale deployment user-service --replicas=3 -n lab8
+  ```
+* **Self-Healing**: If a pod crashes or is deleted (`kubectl delete pod <pod-name> -n lab8`), the Kubernetes ReplicaSet immediately spins up a new replacement pod to maintain the desired state.
+
+## 3. GitHub Actions (CI/CD)
+We implemented a CI pipeline using GitHub Actions (`.github/workflows/ci.yml`). 
+On every `push` or `pull_request` to the `main` branch, the pipeline automatically:
+1. Checks out the code.
+2. Installs dependencies (`npm ci`) for all microservices in parallel using a matrix strategy.
+3. Runs the unit tests (`npm test`) using the native Node.js test runner.
+4. Builds the Docker images to verify successful compilation.
+
+## 4. Monitoring (Prometheus & Grafana)
+We integrated `express-prom-bundle` into our Node.js applications to expose a `/metrics` endpoint.
+
+### Deployment
+Monitoring stack manifests are located in `k8s/monitoring/`.
+```bash
+kubectl apply -f k8s/monitoring -n lab8
+```
+
+### Accessing Dashboards
+Since Prometheus and Grafana are internal `ClusterIP` services, use port-forwarding to access them:
+* **Prometheus**: 
+  ```bash
+  kubectl port-forward svc/prometheus 9090:9090 -n lab8
+  ```
+  *(Access at http://localhost:9090)*
+* **Grafana**:
+  ```bash
+  kubectl port-forward svc/grafana 3000:3000 -n lab8
+  ```
+  *(Access at http://localhost:3000 | Default credentials: admin/admin)*
+
+Grafana is automatically provisioned to use Prometheus as its data source. You can create PromQL panels such as `sum(rate(http_requests_total[1m])) by (service)` to visualize traffic flowing through your microservices.
