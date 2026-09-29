@@ -19,6 +19,14 @@ const proxyOptions = {
     changeOrigin: true,
     secure: false,
     on: {
+        proxyReq: (proxyReq, req, res) => {
+            // Strip headers that might cause routing loop detection on Render's Edge
+            proxyReq.removeHeader('x-forwarded-for');
+            proxyReq.removeHeader('x-forwarded-host');
+            proxyReq.removeHeader('x-forwarded-proto');
+            proxyReq.removeHeader('x-forwarded-port');
+            proxyReq.removeHeader('forwarded');
+        },
         error: (err, req, res) => {
             console.error(`Proxy Error: ${err.message}`);
             res.status(502).json({
