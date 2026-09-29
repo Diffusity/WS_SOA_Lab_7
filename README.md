@@ -49,12 +49,14 @@ In contrast, **Dynamic Service Discovery** (e.g., Consul, Eureka, Kubernetes DNS
    - Create a new "Web Service" in Render for `api-gateway`.
    - Set the Root Directory to `./api-gateway`.
    - Use the Docker environment.
-   - Configure Environment Variables: Set `USER_SERVICE_URL`, `PRODUCT_SERVICE_URL`, and `ORDER_SERVICE_URL` to the internal URLs provided by Render for the deployed microservices.
+   - Configure Environment Variables: Set `USER_SERVICE_URL`, `PRODUCT_SERVICE_URL`, and `ORDER_SERVICE_URL` to the **Public URLs** provided by Render for the deployed microservices (e.g., `https://user-service-7f9k.onrender.com`). *Note: Internal URLs (e.g., `http://user-service-7f9k:10000`) only work if the microservices are deployed as 'Private Services', which may not be available on all free tiers.*
 4. **Public URL**:
    - API Gateway Public URL: https://api-gateway-wqa7.onrender.com
 
 ## Troubleshooting Notes
-- **502 Bad Gateway:** If the gateway returns a 502, it means the target microservice is unreachable. Verify that the environment variables in the Gateway correctly point to the internal URLs of the microservices and that those services are running.
+- **502 Bad Gateway:** If the gateway returns a 502, it means the target microservice is unreachable. Verify that the environment variables in the Gateway correctly point to the microservices and that those services are running.
+- **Routing Loop Detection (Render 502 HTML):** If the gateway proxies a request to a Render public URL without stripping `x-forwarded-*` headers, Render's Edge Router will detect its own headers coming back, assume an infinite routing loop, and return a 502 HTML error page. We resolved this by explicitly stripping `x-forwarded-for` and `x-forwarded-host` in the `http-proxy-middleware`'s `onProxyReq` event.
+- **ENOTFOUND Error:** If the gateway logs show `ENOTFOUND` when trying to resolve a service name like `user-service-7f9k`, it indicates the service was deployed as a "Web Service" instead of a "Private Service". Web Services do not receive internal DNS resolution on Render's private network, so you must use their fully qualified public URLs in the Gateway configuration.
 - **Render Port Binding:** Ensure the Dockerfiles expose the correct ports and that Render binds to them. Render automatically detects the `EXPOSE` instruction.
 
 ## Reflection
