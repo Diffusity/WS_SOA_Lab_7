@@ -51,7 +51,7 @@ In contrast, **Dynamic Service Discovery** (e.g., Consul, Eureka, Kubernetes DNS
    - Use the Docker environment.
    - Configure Environment Variables: Set `USER_SERVICE_URL`, `PRODUCT_SERVICE_URL`, and `ORDER_SERVICE_URL` to the internal URLs provided by Render for the deployed microservices.
 4. **Public URL**:
-   - API Gateway Public URL: `[PLACEHOLDER - Insert your Render Gateway URL here]`
+   - API Gateway Public URL: https://api-gateway-wqa7.onrender.com
 
 ## Troubleshooting Notes
 - **502 Bad Gateway:** If the gateway returns a 502, it means the target microservice is unreachable. Verify that the environment variables in the Gateway correctly point to the internal URLs of the microservices and that those services are running.

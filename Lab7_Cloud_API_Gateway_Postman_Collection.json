@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6",
+		"name": "Lab 7: Cloud API Gateway",
+		"description": "Tests for the deployed API Gateway routing to microservices on Render.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Gateway Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/health",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Alice Cloud\",\n  \"email\": \"alice.cloud@example.com\"\n}"
+				},
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/users",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/users",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Cloud Compute Instance\",\n  \"price\": 15.99\n}"
+				},
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/products",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/products",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order (Update IDs first)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": \"REPLACE_ME_WITH_REAL_USER_ID\",\n  \"productId\": \"REPLACE_ME_WITH_REAL_PRODUCT_ID\",\n  \"quantity\": 2\n}"
+				},
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/orders",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api-gateway-wqa7.onrender.com/orders",
+					"protocol": "https",
+					"host": [
+						"api-gateway-wqa7",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
