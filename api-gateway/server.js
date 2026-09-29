@@ -45,11 +45,15 @@ const routes = {
 };
 
 // Apply Proxies
-for (const [path, target] of Object.entries(routes)) {
-    app.use(path, createProxyMiddleware({
+for (const [prefix, target] of Object.entries(routes)) {
+    const proxy = createProxyMiddleware({
         ...proxyOptions,
         target,
-    }));
+    });
+    app.use((req, res, next) => {
+        if (req.path !== prefix && !req.path.startsWith(`${prefix}/`)) return next();
+        return proxy(req, res, next);
+    });
 }
 
 // Global Error Handler
