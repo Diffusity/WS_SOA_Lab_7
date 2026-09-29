@@ -17,6 +17,7 @@ app.get('/health', (req, res) => {
 // Proxy Options
 const proxyOptions = {
     changeOrigin: true,
+    secure: false,
     on: {
         error: (err, req, res) => {
             console.error(`Proxy Error: ${err.message}`);
